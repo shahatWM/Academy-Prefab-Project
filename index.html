@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Bank Card</title>
+
+<style>
+body {
+  background: #eef2f6;
+  font-family: 'Segoe UI', sans-serif;
+  
+  padding: 60px 20px;
+}
+
+/* CARD WRAPPER */
+.card-wrapper {
+  perspective: 1200px;
+}
+#cardNumber {
+  display: flex;
+  justify-content: space-between;  /* evenly distribute */
+  width: 100%;
+  font-size: 29px;
+  letter-spacing: 2px;
+}
+/* FLIP CONTAINER */
+.card {
+  width: 420px;
+  height: 260px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.8s;
+  cursor: pointer;
+}
+
+.card.flipped {
+  transform: rotateY(180deg);
+}
+
+/* COMMON CARD FACE */
+.card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  backface-visibility: hidden;
+  padding: 25px;
+  box-sizing: border-box;
+  color: white;
+  background: linear-gradient(135deg,#e0568a,#e66fa1);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+/* FRONT */
+.card-front {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* BACK */
+.card-back {
+  transform: rotateY(180deg);
+}
+
+.balance {
+  text-align: right;
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+.card-title {
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.network {
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+.number {
+  font-size: 22px;
+  letter-spacing: 3px;
+  margin: 20px 0;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.label {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.value {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.stripe {
+  height: 50px;
+  background: #6a2c47;
+  margin: 20px 0;
+}
+
+.cvv-box {
+  background: #fff;
+  color: #000;
+  padding: 10px;
+  text-align: right;
+  border-radius: 5px;
+  font-weight: bold;
+  width: 80px;
+}
+
+.actions {
+  margin-top: 30px;
+  text-align: center;
+}
+
+button {
+  padding: 8px 14px;
+  margin: 0 5px;
+  border: none;
+  border-radius: 6px;
+  background: #2a5298;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+/* TRANSACTIONS SECTION */
+.transactions-container {
+  margin-top: 50px;
+  background: white;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.transactions-container h2 {
+  margin-bottom: 20px;
+  font-size: 22px;
+}
+
+/* TABLE */
+.transactions-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.transactions-table thead {
+  background: #f5f7fa;
+}
+
+.transactions-table th {
+  text-align: left;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #555;
+}
+
+.transactions-table td {
+  padding: 14px 12px;
+  font-size: 15px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.transactions-table tbody tr:hover {
+  background: #f9fafc;
+}
+
+.amount-column {
+  text-align: right;
+}
+
+.amount-negative {
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+.amount-positive {
+  color: #2ecc71;
+  font-weight: 600;
+}
+</style>
+</head>
+<body>
+
+<div>
+  <div class="card-wrapper">
+    <div class="card" id="card">
+
+      <!-- FRONT -->
+      <div class="card-face card-front">
+        <div class="row">
+          <div>
+            <div class="card-title" id="cardName"></div>
+            <div class="network" id="network"></div>
+          </div>
+          <div class="balance">
+            Balance<br>
+            <span id="balance"></span>
+          </div>
+        </div>
+
+        <div class="number" id="cardNumber"></div>
+
+        <div class="row">
+          <div>
+            <div class="label">Card Holder Name</div>
+            <div class="value" id="cardHolder"></div>
+          </div>
+          <div>
+            <div class="label">Valid Thru</div>
+            <div class="value" id="expiry"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BACK -->
+      <div class="card-face card-back">
+        <div class="stripe"></div>
+
+        <div class="row">
+          <div class="label">CVV</div>
+          <div class="cvv-box" id="cvv"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="actions">
+    <button id="toggleNumber">Toggle Number</button>
+  </div>
+  <div class="transactions-container">
+    <h2 style="margin-top:50px;">Transactions</h2>
+    <table id="transactionTable" style="width:100%; background:white; border-collapse:collapse;" class="transactions-table">
+        <thead>
+            <tr>
+            <th>Merchant</th>
+            <th>Amount</th>
+            <th>Category</th>
+            <th>Date</th>
+            </tr>
+        </thead>
+        <tbody id="transactionBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
